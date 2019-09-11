@@ -26,10 +26,10 @@ let g = svg.append("g")
 
 // open csv
 d3.csv("assets/data/data.csv")
-  .then(function(arrState) {
+  .then(arrState=>{
 
     // 1) cast data
-    arrState.forEach(function(obj) {
+    arrState.forEach(obj=>{
       obj.income = +obj.income;
       obj.obesity = +obj.obesity;
     });
@@ -65,22 +65,25 @@ d3.csv("assets/data/data.csv")
 			.attr("fill", "lightblue")
 			.attr("opacity", "1")
 		
-		// 6) create text labels
-    let objTxt = g.selectAll("text")
+		// 6) create text labels. Note: instead of selecting all text tags, I select
+		// only those tags with the "circlelabel" class
+    let objTxt = g.selectAll(".circlelabel")
 			.data(arrState)
 			.enter()
 			.append("text")
+			.attr("class", "circlelabel")
 			.attr("dx", obj=>fnXScale(obj.income) - 7)
 			.attr("dy", obj=>fnYScale(obj.obesity) + 4)
 			.text(obj=>obj.abbr)
       .attr("fill", "white")
       .attr("font-size", 10);
+
 			
     // 7) create tooltip function
     let fnToolTip = d3.tip()
       .attr("class", "tooltip")
       .offset([80, -60])
-      .html(function(obj) {
+      .html(obj=>{
         return (`<strong>${obj.state}</strong><br>Income: $${obj.income.toLocaleString()}<br>Obesity: ${obj.obesity}%`);
       });
 
@@ -88,20 +91,20 @@ d3.csv("assets/data/data.csv")
     g.call(fnToolTip);
 
     // 9) create listeners to show & hide tooltip
-    objCir.on("click", function(data) {					// circle: on click
+    objCir.on("click", function(obj) {				// circle: on click
       fnToolTip.style("display", "block");
-      fnToolTip.show(data, this);
+      fnToolTip.show(obj, this);
     })
-      .on("mouseout", function(data, index) { // circle: on mouseout
-        fnToolTip.hide(data);
+      .on("mouseout", function(obj, index) {	// circle: on mouseout
+        fnToolTip.hide(obj);
       });
 
-    objTxt.on("click", function(data) {					// text: on click
+    objTxt.on("click", function(obj) {				// text: on click
       fnToolTip.style("display", "block");
-			fnToolTip.show(data, this);
+			fnToolTip.show(obj, this);
     })
-      .on("mouseout", function(data, index) { // text: on mouseout
-        fnToolTip.hide(data);
+      .on("mouseout", function(obj, index) {  // text: on mouseout
+        fnToolTip.hide(obj);
       });
 
     // 10) label axes
